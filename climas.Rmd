@@ -1,0 +1,102 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+```{r}
+climas = read_csv(here::here("data/clima_cg_jp-semanal.csv"), 
+                  col_types = "cTdddddd")
+
+glimpse(climas)
+```
+
+```{r}
+
+climas %>%
+    filter(!is.na(mes),
+           !is.na(tmedia)) %>%
+    ggplot(mapping = aes(x = mes, y = tmedia, fill= mes)) +
+    ggtitle("Temperatura média em meses do ano") + 
+    xlab("Meses do ano") +
+    ylab("Temperatura Média") + 
+    geom_col()
+
+
+
+
+
+```
+
+```{r}
+
+climas %>%
+    filter(!is.na(ano),
+           !is.na(tmedia),
+           !is.na(cidade))%>%
+    filter(mes %in% c(6)) %>%
+    filter(cidade %in% c("Campina Grande")) %>%
+    ggplot(mapping = aes(x = ano, y = tmedia)) +
+    ggtitle("Temperatura média na época de São João em Campina Grande") + 
+    xlab("Anos") +
+    ylab("Temperatura Média") + 
+    geom_col()
+
+
+
+
+
+```
+
+
+```{r}
+
+climas %>%
+    filter(!is.na(ano),
+           !is.na(chuva),
+           !is.na(cidade))%>%
+    ggplot(mapping = aes(x= cidade, y = chuva, fill = cidade)) +
+    ggtitle("Chuvas em Campina grande e João Pessoa") + 
+    xlab("Cidades") +
+    ylab("Chuva") + 
+    geom_col()
+
+
+
+
+
+```
+
+
+```{r}
+
+climas %>%
+    filter(!is.na(ano),
+           !is.na(chuva),
+           !is.na(cidade))%>%
+    group_by(cidade) %>% 
+    ggplot(mapping = aes(x= semana, y = chuva)) +
+    ggtitle("Chuvas em Campina grande e João Pessoa") + 
+    xlab("Semanas") +
+    ylab("Chuva") + 
+    geom_col()
+
+
+
+
+
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
