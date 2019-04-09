@@ -10,6 +10,7 @@ Try executing this chunk by clicking the *Run* button within the chunk or by pla
 ```{r}
 library(tidyverse)
 library(here)
+library(lubridate)
 ```
 
 ```{r}
@@ -24,7 +25,7 @@ glimpse(climas)
 climas %>%
     filter(!is.na(mes),
            !is.na(tmedia)) %>%
-    ggplot(mapping = aes(x = mes, y = tmedia, fill= mes)) +
+    ggplot(mapping = aes(x = mes, y = tmedia)) +
     ggtitle("Temperatura média em meses do ano") + 
     xlab("Meses do ano") +
     ylab("Temperatura Média") + 
@@ -92,6 +93,20 @@ climas %>%
 
 
 
+
+```
+
+```{r}
+
+climas %>%
+
+    filter( !is.na(semana),
+            !is.na(chuva),
+            !is.na(cidade))%>%
+    data <- data.frame(ano, semana, chuva)
+    
+    ggplot(data, aes(x=chuva, y=semana, fill=cidade)) + 
+        geom_area()
 
 ```
 
