@@ -11,6 +11,11 @@ Try executing this chunk by clicking the *Run* button within the chunk or by pla
 library(tidyverse)
 library(here)
 library(lubridate)
+library(dplyr)
+library(magrittr)
+library(plotly)
+
+
 ```
 
 ```{r}
@@ -20,35 +25,50 @@ climas = read_csv(here::here("data/clima_cg_jp-semanal.csv"),
 glimpse(climas)
 ```
 
+
+                                    Primeiro exercício com R e análise
+
+
+1 - QUAIS OS MESES MAIS QUENTES E MAIS FRIOS?
+
 ```{r}
 
-climas %>%
-    filter(!is.na(mes),
-           !is.na(tmedia)) %>%
-    ggplot(mapping = aes(x = mes, y = tmedia)) +
-    ggtitle("Temperatura média em meses do ano") + 
-    xlab("Meses do ano") +
-    ylab("Temperatura Média") + 
-    geom_col()
+agrupado.por.mes <- climas %>% 
+    group_by(mes) %>% 
+    summarise(temp_media = mean(tmedia))
 
-
-
-
-
+    ggplot(data = climas, aes(x = mes, y = tmedia, group = mes)) + 
+        geom_col(fill = "#87CEEB") + 
+        scale_x_discrete(limits = c(1:12)) + 
+        xlab("Meses") + 
+        ylab("Temperatura média (ºC)")
+    
 ```
 
+    O GRÁFICO ACIMA MOSTRA A DISTRIBUIÇÃO DE TEMPERATURA MÉDIA DAS CIDADES DE CAMPINA GRANDE E JOÃO PESSOA AO LONGO DOS MESES DO ANO. PODEMOS OBSERVAR QUE O MESES DE JANEIRO, DEZEMBRO E MARÇO SÃO OS MESES MAIS QUENTES DO ANO, SENDO JANERIO O MAIS QUENTE. TAMBÉM É POSSÍVEL OBSERVAR QUE O INTERVALO ENTRE OS MESES DE JUNHO E SETEMBRO É A ÉPOCA MAIS FRIA DO ANO, SENDO JULHO O MÊS COM AS MENORES TEMPERATURAS MÉDIAS. 
+
+
+
+
+
+
+
+
+2 - Qual foi o São João mais frio de Campina Grande?
+
 ```{r}
 
 climas %>%
+    
     filter(!is.na(ano),
            !is.na(tmedia),
            !is.na(cidade))%>%
     filter(mes %in% c(6)) %>%
     filter(cidade %in% c("Campina Grande")) %>%
-    ggplot(mapping = aes(x = ano, y = tmedia)) +
+    ggplot(mapping = aes(x = ano, y = tmedia, full = ano)) +
     ggtitle("Temperatura média na época de São João em Campina Grande") + 
     xlab("Anos") +
-    ylab("Temperatura Média") + 
+    ylab("Temperatura média (ºC)") + 
     geom_col()
 
 
@@ -56,6 +76,17 @@ climas %>%
 
 
 ```
+
+    O GRÁFICO ACIMA MOSTRA A DISTRIBUIÇÃO DE TEMPERATURA MÉDIA NOS MESES DE JUNHO NA  CIDADES DE CAMPINA GRANDE AO LONGO DOS ANOS. ANALISANDO O GRÁFICO, CHEGAMOS A CONCLUSÃO QUE O SÃO JOÃO MAIS FRIO EM CAMPINA GRANDE OCORREU NO ANO DE 2004. 
+
+
+
+
+
+
+ONDE CHOVE MAIS?
+
+
 
 
 ```{r}
@@ -67,7 +98,7 @@ climas %>%
     ggplot(mapping = aes(x= cidade, y = chuva, fill = cidade)) +
     ggtitle("Chuvas em Campina grande e João Pessoa") + 
     xlab("Cidades") +
-    ylab("Chuva") + 
+    ylab("Quantidade total de chuva (em mm)") + 
     geom_col()
 
 
@@ -76,37 +107,24 @@ climas %>%
 
 ```
 
+O GRÁFICO ACIMA INFORMA A QUANTIDADE DE CHUVA, COMTABILIZADA NA NOSSA BASE DE DADOS, POR CIDADE. É NOTÓRIA A DISPARIDADE ENTRE A QUANTIDADE DE CHUVA EM JOÃO PESSOA E CAMPINA GRANDE. CONCLUI-SE ENTÃO QUE EM JOÃO PESSOA CHOVE MAIS QUE EM CAMPINA GRANDE.
+
+
+
+
+
+4 - Quanto chove por semana em João Pessoa e Campina grande?
 
 ```{r}
 
-climas %>%
-    filter(!is.na(ano),
-           !is.na(chuva),
-           !is.na(cidade))%>%
-    group_by(cidade) %>% 
-    ggplot(mapping = aes(x= semana, y = chuva)) +
-    ggtitle("Chuvas em Campina grande e João Pessoa") + 
-    xlab("Semanas") +
-    ylab("Chuva") + 
-    geom_col()
+agrupado.por.semana <- climas %>% 
+    group_by(semana, cidade, chuva) %>% 
+    summarise(chuva_media = mean(chuva))
 
+ggplot(data = agrupado.por.semana, aes(x = semana, y = chuva, group = cidade, fill = cidade)) + geom_bar(stat = "identity", position = "dodge") + 
+         ylab("Quantidade total de chuva (em mm)") + 
+         xlab("Semanas")
 
-
-
-
-```
-
-```{r}
-
-climas %>%
-
-    filter( !is.na(semana),
-            !is.na(chuva),
-            !is.na(cidade))%>%
-    data <- data.frame(ano, semana, chuva)
-    
-    ggplot(data, aes(x=chuva, y=semana, fill=cidade)) + 
-        geom_area()
 
 ```
 
