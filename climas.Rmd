@@ -65,9 +65,29 @@ climas %>%
 
 ###1.3 QUAL A RELAÇÃO ENTRE A VARIAÇÃO DE CHUVA E A VARIAÇÃO DE TEMPERATURA EM JOÃO PESSOA NO MES DE JANEIRO? 
 
+###NOS ÚLTIMOS 10 ANOS, A QUANTIDADE DE CHUVA EM CAMPINA GRANDE VEM AUMENTANDO OU DIMINUINDO?
 
+Analisamos a quantidade total de chuva anual nos ultimos 10 anos em Campina Grande para buscar um padrão de decaimento ou crescimento, de forma a tentar prever se a quantidade de chuva para o ano de 2019. Olhando o gráfico de total de chuva anual podemos ver que não há um padrão bem definido. Entre os anos de 2009 até 2012 a uma alternância de decrescimento e crescimento, porém, podemos notar que a partir do ano de 2013 até o ano de 2016 (que corresponde ao período), o gráfico tem comportamento sempre decrescente. No ano de 2017 podemos observar novamente um crescimento, seguido de uma queda em 2018. Há uma queda no gráfico entre 2018 e 2019, devido a falta de dados sobre 2019. Analisamos também a quantidade de chuva nos últimos 10 anos apenas para os meses de janeiro e feveriro, para comparar com a quantidade de chuva de 2019 até o momento. Também não há um padrão bem definido, o que não nos permite inferir nada com propriedade, porém podemos observar que em 2019 chuveu menos no primeiro bimestre do ano do que em 2016 e 2018, que foram anos que teve uma quantidade de chuvas menor que 2017, o qual 2019 supera para o primeiro bimestre. 
 
+```{r}
+climas %>%
+  filter(ano >= 2009) %>%
+  group_by(ano) %>%
+  summarise(quant_chuva_anual = sum(chuva)) %>%
+    ggplot(aes(x=ano, y= quant_chuva_anual)) + 
+  geom_area() +
+  scale_x_continuous(breaks = seq(2009,2019,1)) +
+  labs(x = "Ano", y = "Quantidade de chuva anual(mm)")
 
+climas %>%
+  filter(ano >= 2009 & mes < 3) %>%
+  group_by(ano) %>%
+  summarise(quant_chuva_anual = sum(chuva)) %>%
+    ggplot(aes(x=ano, y= quant_chuva_anual)) + 
+  geom_area() +
+  scale_x_continuous(breaks = seq(2009,2019,1)) + 
+  labs(x = "Ano", y = "Quantidade de chuva do primeiro bimestre(Jan/Fev)")
+```
 
 
 
