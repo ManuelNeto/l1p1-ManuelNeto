@@ -1,13 +1,19 @@
 ---
-title: "R Notebook"
-output: html_notebook
+title: "L1p1 Review"
+output:
+    html_document: default
+    df_print: paged
+theme: sandstone
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+This is a review from the first lab of FPCC2 at the mastering course at UFCG. 
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+Equipe: 
+    Ivan Aguiar de Almeida
+    Manuel Severino da Silva
+    Wesley Brenno Rodrigues Herculano
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(here)
 library(lubridate)
@@ -16,56 +22,70 @@ library(magrittr)
 library(ggbeeswarm)
 library(plotly)
 
-
-```
-
-```{r}
 climas = read_csv(here::here("data/clima_cg_jp-semanal.csv"), 
                   col_types = "cTdddddd")
 
 ```
 
 
-                                    Primeiro exercício com R e análise
+### 1.1 QUAL FOI O SÃO JOÃO MAIS FRIO EM CAMPINA GRANDE NOS ÚLTIMOS 20 ANOS?
 
-
-#1. Perguntas
-
-###1.1 QUAL FOI O SÃO JOÃO MAIS FRIO EM CAMPINA GRANDE NOS ÚLTIMOS 20 ANOS?
-
-
-    Considerando o São João como o mês de Junho inteiro, temos que os anos de 2003, 2008, 2014, 2016 e 2018 tiveram as menores temperaturas mínimas (Entre 17.3 e 17.6). Dentre esses, anos 2008 foi o ano que teve também a menor temperatura média (22.2) e a menor máxima (26.8). Assim, podemos considerar o ano de 2008 como o São João mais frio de Campina Grande.
+Considerando o São João como o mês de Junho inteiro, temos que os anos de 2003, 2008, 2014, 2016 e 2018 tiveram as menores temperaturas mínimas (Entre 17.3 ºC e 17.6 ºC). Dentre esses, anos 2008 foi o ano que teve também a menor temperatura média (22.2 ºC) e a menor máxima (26.8 ºC). Assim, podemos considerar o ano de 2008 como o São João mais frio de Campina Grande.
+    
+```{r message=FALSE, warning=FALSE}
+climas %>%
+  filter(cidade == "Campina Grande" & mes == 6) %>%
+  group_by(ano) %>%
+  summarise(temp_min = round(median(tmin),digits = 1), temp_max = round(median(tmax),digits = 1), temp_media = round(median(tmedia),digits = 1)) %>%
+  ggplot() +
+  geom_line(aes(x = ano, y = temp_max, colour = "Temperatura máxima")) +
+  geom_text(aes(x = ano, y = temp_max,label=temp_max),hjust=0, vjust=0, size=2.5) +
+  
+  geom_line(aes(x = ano, y = temp_min, colour = "Temperatura mínima")) +
+  geom_text(aes(x = ano, y = temp_min,label=temp_min),hjust=0, vjust=0, size=2.5) +
+    
+  geom_line(aes(x = ano, y = temp_media, colour = "Temperatura média")) +
+  geom_text(aes(x = ano, y = temp_media, label=temp_media),hjust=0, vjust=0, size=2.5) +
+      
+  scale_x_continuous("Ano", breaks = seq(1995,2018,2)) +
+  scale_y_continuous("Temperatura", breaks = seq(16,40,10)) +
+  theme(axis.text.x = element_text(angle = 45))
+```
     
 
-###1.2 A DISTRIBUIÇÃO DE CHUVAS É DIFERENTE EM MESES ESPECÍFICOS?
+### 1.2 A DISTRIBUIÇÃO DE CHUVAS É DIFERENTE EM MESES ESPECÍFICOS?
 Realizando um agrupamento dos registros de chuva por mês, temos os gráfico abaixos, onde cada ponto representa um registro de chuva para o mês no eixo X, e quantidade no eixo Y. Pelos gráficos podemos perceber que durante os meses de Maio a Agosto há um aumento na quantidade de chuva e na quantidade de dias que chovem. É possível perceber também que os meses de Outubro, Novembro e Dezembro possuem uma distribuição muito parecida, assim como Janeiro, Fevereiro e Março também.
 
 ```{r}
 climas %>%
-  ggplot(aes(x=mes, y= chuva)) + 
-  geom_quasirandom(size=.90, aes(colour = cidade))  +
-  scale_x_continuous("Mês", breaks = seq(1,12,1)) +
-  scale_y_continuous("Chuva (mm)", breaks = seq(0,400,100))
+    ggplot(aes(x=mes, y= chuva)) + 
+    geom_quasirandom(size=.90, aes(colour = cidade))  +
+    scale_x_continuous("Mês", breaks = seq(1,12,1)) +
+    scale_y_continuous("Chuva (mm)", breaks = seq(0,400,100)) 
 
 climas %>%
-  filter(cidade == "Campina Grande") %>%
-  ggplot(aes(x=mes, y= chuva)) + 
-  geom_quasirandom(size=.90)  +
-  scale_x_continuous("Mês", breaks = seq(1,12,1)) +
-  scale_y_continuous("Chuva (mm)", breaks = seq(0,400,100))
+    filter(cidade == "Campina Grande") %>%
+    ggplot(aes(x=mes, y= chuva)) + 
+    geom_quasirandom(size=.90)  +
+    scale_x_continuous("Mês", breaks = seq(1,12,1)) +
+    scale_y_continuous("Chuva (mm)", breaks = seq(0,400,100)) +
+    labs(
+        title = "Chuva por mes em Campina Grande"
+    )
 
 climas %>%
-  filter(cidade == "João Pessoa") %>%
-  ggplot(aes(x=mes, y= chuva)) + 
-  geom_quasirandom(size=.90)  +
-  scale_x_continuous("Mês", breaks = seq(1,12,1)) +
-  scale_y_continuous("Chuva (mm)", breaks = seq(0,400,100))
+    filter(cidade == "João Pessoa") %>%
+    ggplot(aes(x=mes, y= chuva)) + 
+    geom_quasirandom(size=.90)  +
+    scale_x_continuous("Mês", breaks = seq(1,12,1)) +
+    scale_y_continuous("Chuva (mm)", breaks = seq(0,400,100)) + 
+    labs(
+        title = "Chuva por mes em João Pessoa"
+    )
 ```
 
 
-###1.3 QUAL A RELAÇÃO ENTRE A VARIAÇÃO DE CHUVA E A VARIAÇÃO DE TEMPERATURA EM JOÃO PESSOA NO MES DE JANEIRO? 
-
-###NOS ÚLTIMOS 10 ANOS, A QUANTIDADE DE CHUVA EM CAMPINA GRANDE VEM AUMENTANDO OU DIMINUINDO?
+### 1.3 QUAL A ALTERAÇÃO DO VOLUME DE CHUVAS EM CAMPINA GRANDE NOS ÚLTIMOS 10 ANOS?
 
 Analisamos a quantidade total de chuva anual nos ultimos 10 anos em Campina Grande para buscar um padrão de decaimento ou crescimento, de forma a tentar prever se a quantidade de chuva para o ano de 2019. Olhando o gráfico de total de chuva anual podemos ver que não há um padrão bem definido. Entre os anos de 2009 até 2012 a uma alternância de decrescimento e crescimento, porém, podemos notar que a partir do ano de 2013 até o ano de 2016 (que corresponde ao período), o gráfico tem comportamento sempre decrescente. No ano de 2017 podemos observar novamente um crescimento, seguido de uma queda em 2018. Há uma queda no gráfico entre 2018 e 2019, devido a falta de dados sobre 2019. Analisamos também a quantidade de chuva nos últimos 10 anos apenas para os meses de janeiro e feveriro, para comparar com a quantidade de chuva de 2019 até o momento. Também não há um padrão bem definido, o que não nos permite inferir nada com propriedade, porém podemos observar que em 2019 chuveu menos no primeiro bimestre do ano do que em 2016 e 2018, que foram anos que teve uma quantidade de chuvas menor que 2017, o qual 2019 supera para o primeiro bimestre. 
 
@@ -91,11 +111,3 @@ climas %>%
 
 
 
-
-
-
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
-
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
-
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
